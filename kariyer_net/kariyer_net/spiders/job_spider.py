@@ -23,11 +23,15 @@ class JobSpider(scrapy.Spider):
         self.driver = webdriver.Firefox()
 
     def try_again(self, appeared, loading):
+        delay = 1
         while not appeared or loading:
-            sleep(1)
+            sleep(delay)
             scrapy_selector = Selector(text=self.driver.page_source)
             appeared = scrapy_selector.xpath("//div[@class='content knetLoadingWrapper']")
             loading = scrapy_selector.xpath("//div[@class='knetLoadingBig']")
+            delay += 1
+            if delay > 3:
+                break
 
     def parse(self, response):
         self.driver.get(response.url)
@@ -38,7 +42,7 @@ class JobSpider(scrapy.Spider):
 
         for link in links:
             items = KariyerNetItem()
-            self.driver.get("https://www.kariyer.net/is-ilani/" + link)
+            self.driver.get("https://www.kariyer.net" + link)
             self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             WebDriverWait(self.driver, 10).until_not(
                 EC.presence_of_element_located((By.XPATH, "//div[@class='knetLoadingBig']")))
@@ -47,6 +51,7 @@ class JobSpider(scrapy.Spider):
             appeared = scrapy_selector.xpath("//div[@class='content knetLoadingWrapper']")
             loading = scrapy_selector.xpath("//div[@class='knetLoadingBig']")
 
+            #aradigimiz element gelmediyse diye yada sayfa hala yukleniyorsa diye kontrol et
             self.try_again(appeared, loading)
 
             element = scrapy_selector.xpath("//div[@class='content knetLoadingWrapper']").extract()
@@ -55,11 +60,10 @@ class JobSpider(scrapy.Spider):
 
             if loading or len(element) == 0:
                 exceptional_urls.append(link)
-                print("link: ")
-                print(link)
+                self.logger.warning("exceptional url" + str(link))
                 continue
 
-
+            print(element)
             items['title'] = scrapy_selector.xpath("//a[@id='jobTitle']/text()").extract()
             items['company'] = scrapy_selector.xpath("//a[@id='jobCompany']/text()").extract()
             items['location'] = scrapy_selector.xpath("//span[@id='jobCity']/text()").extract()
