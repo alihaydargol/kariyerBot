@@ -60,16 +60,33 @@ class JobSpider(scrapy.Spider):
 
             if loading or len(element) == 0:
                 exceptional_urls.append(link)
-                self.logger.warning("exceptional url" + str(link))
+                self.logger.warning("exceptional url --> " + str(link))
                 continue
 
             print(element)
+            print(scrapy_selector.xpath("//div[@class='sub-box aday-kriterleri']//div[2]//div[2]/p/text()").extract())
+
             items['title'] = scrapy_selector.xpath("//a[@id='jobTitle']/text()").extract()
             items['company'] = scrapy_selector.xpath("//a[@id='jobCompany']/text()").extract()
             items['location'] = scrapy_selector.xpath("//span[@id='jobCity']/text()").extract()
             items['description'] = scrapy_selector.xpath("//div[@class='genel-nitelikler']/text()").extract()
-            #ilan-detay-mid-wrapper
+            items['experience'] = scrapy_selector.xpath("//div[@class='sub-box aday-kriterleri']//div[1]//div[2]/p/text()").extract()
 
+            #TODO bunu boş çekiyor düzelt
+            data = scrapy_selector.xpath("//div[@class='sub-box aday-kriterleri']//div[2]//div[1]/p/text()").extract()
+            print(data)
+            if data == "Askerlik Durumu:" or data == "Military Status:":
+                items['military_obligation'] = scrapy_selector.xpath("//div[@class='sub-box aday-kriterleri']//div[2]//div[2]/p/text()").extract()
+                print(scrapy_selector.xpath("//div[@class='sub-box aday-kriterleri']//div[2]//div[2]/p/text()").extract())
+                print("burda 1")
+            elif data == "Eğitim Seviyesi:" or data == "Level of education:":
+                items['military_obligation'] = "NO DATA"
+                items['education'] = scrapy_selector.xpath("//div[@class='sub-box aday-kriterleri']//div[2]//div[2]/p/text()").extract()
+                print(scrapy_selector.xpath("//div[@class='sub-box aday-kriterleri']//div[2]//div[2]/p/text()").extract())
+                print("burda 2")
+            else:
+                print("burda 3")
+                raise SystemExit("There is " + data + " instead Military Status: or Level of education: in the HTML page and i thought that it can not happen")
 
 
             # scrapy_selector = Selector(text=self.driver.page_source)
