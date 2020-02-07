@@ -13,14 +13,16 @@ class KariyerNetItem(scrapy.Item):
     title = scrapy.Field()
     company = scrapy.Field()
     location = scrapy.Field()
-    description = scrapy.Field()
+    description = scrapy.Field() #job description
     experience = scrapy.Field()
     military_obligation = scrapy.Field()
     education = scrapy.Field()
+    languages = scrapy.Field()
     industry = scrapy.Field()
     department = scrapy.Field()
     job_type = scrapy.Field() #part-time full-time
-    position = scrapy.Field()
+    job_role = scrapy.Field()
+    position_level = scrapy.Field()
     personel_count = scrapy.Field()
     application_count = scrapy.Field()
 
