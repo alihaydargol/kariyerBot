@@ -21,6 +21,21 @@ NEWSPIDER_MODULE = 'kariyer_net.spiders'
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
 
+# Configure item pipelines
+# See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
+ITEM_PIPELINES = {
+   'scrapyelasticsearch.scrapyelasticsearch.ElasticSearchPipeline': 500,
+}
+
+# Elastic Search
+
+ELASTICSEARCH_SERVER = 'localhost'
+ELASTICSEARCH_PORT = 9200
+ELASTICSEARCH_INDEX = 'jobs'
+ELASTICSEARCH_TYPE = 'items'
+
+
+
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 
@@ -62,11 +77,6 @@ ROBOTSTXT_OBEY = True
 #    'scrapy.extensions.telnet.TelnetConsole': None,
 #}
 
-# Configure item pipelines
-# See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'kariyer_net.pipelines.KariyerNetPipeline': 300,
-#}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
